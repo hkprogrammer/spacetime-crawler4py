@@ -12,6 +12,7 @@ class Worker(Thread):
         self.logger = get_logger(f"Worker-{worker_id}", "Worker")
         self.config = config
         self.frontier = frontier
+        self.discoveredURLS = []
         
         with open("stopwords.txt","r") as f:
             self.stopwords = [i.strip() for i in f]
@@ -34,7 +35,7 @@ class Worker(Thread):
             
             writingFile = open("wordsCollection.txt","a")
             
-            scraped_urls = scraper.scraper(self,self.frontier,tbd_url, resp,self.config,writingFile,self.stopwords)
+            scraped_urls = scraper.scraper(self,self.frontier,tbd_url, resp,self.config,writingFile,self.stopwords,self.discoveredURLS)
             writingFile.close()
             for scraped_url in scraped_urls:
                 self.frontier.add_url(scraped_url)
