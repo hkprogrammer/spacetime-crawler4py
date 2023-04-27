@@ -15,5 +15,7 @@ class Config(object):
 
         self.seed_urls = config["CRAWLER"]["SEEDURL"].split(",")
         self.time_delay = float(config["CRAWLER"]["POLITENESS"])
+        
+        self.min_words = int(config["SCRAPER"]["MIN_WORD_COUNT"].strip()) # added by Hitoki 4/27/2023
 
         self.cache_server = None

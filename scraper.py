@@ -3,14 +3,14 @@ from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 
 
-def scraper(worker,frontier,url, resp,config,writingFile,stopwords):
+def scraper(worker,frontier,url, resp,config,writingFile,stopwords,discoveredURLS):
 
 
-    links = extract_next_links(worker,frontier,url, resp,config,writingFile,stopwords)
+    links = extract_next_links(worker,frontier,url, resp,config,writingFile,stopwords,discoveredURLS)
     
     return [link for link in links if is_valid(link)]
 
-def extract_next_links(worker,frontier,url, resp,config, writingFile,stopwords):
+def extract_next_links(worker,frontier,url, resp,config, writingFile,stopwords,discoveredURLs):
     # Implementation required.
     # url: the URL that was used to get the page
     # resp.url: the actual url of the page
@@ -25,29 +25,49 @@ def extract_next_links(worker,frontier,url, resp,config, writingFile,stopwords):
     
     ### Start Added by Hitoki 4/26/2023 10:52pm
     
-    soup = BeautifulSoup(resp.raw_response.content, 'html.parser') # beautifulsoup for html.
     
-    #finding all links
-    links = list()
-    texts = soup.get_text()
+    # print(resp)
+    
+    
+    if resp.status == 200: #added by Hitoki 4/27/2023 12:17pm
+        print(url)
+        soup = BeautifulSoup(resp.raw_response.text, 'html.parser') # beautifulsoup for html.
+    
+        #finding all links
+        links = list()
+        texts = soup.get_text()
 
-    tokens = list(set(tokenize(texts,stopwords)))
-    
-    
-    if simHash(tokens) not in frontier.visitedSimHashes:
-        #TODO complete simhash
-        writingFile.write("PAGE::"+url)
-        writingFile.write(sorted(tokens))
-        for link in soup.find_all('a'):
+        tokens = list(set(tokenize(texts,stopwords)))
+        
+        
+        if simHash(tokens) not in frontier.visitedSimHashes:
+            #TODO complete simhash
             
-            link = toAbsolute(url,link)
-            
-            if link not in frontier.visited:
-                if "?" in link:
-                    link = link[:link.index("?")] # this takes out the fragment
-                links.append(link.get('href'))
-
-        return links
+            if len(tokens) >= config.min_words:
+                
+                writingFile.write("\nPAGE::"+url)
+                writingFile.write("\n"+"\n".join(sorted(tokens)))
+                
+            for link in soup.find_all('a'):
+                link = link.get('href')
+                
+                if not link or "pdf" in link:
+                    continue
+                
+                if re.match("^.+ics.uci.edu/",str(link)) or re.match("^.+cs.uci.edu/",str(link)) or re.match("^.+informatics.uci.edu/",str(link)) or re.match("^.+stat.uci.edu/",str(link)):
+                    
+                    link = toAbsolute(url,link)
+                    
+                    if link not in discoveredURLs:
+                        if "?" in link:
+                            link = link[:link.index("?")] # this takes out the fragment
+                        if "#" in link:
+                            link = link[:link.index("#")]
+                        links.append(link)
+                        discoveredURLs.append(url)
+            frontier.visited.append(discoveredURLs)
+            print(f"\n\nDiscovered: {len(discoveredURLs)} URLS so far & Visited: {len(frontier.visited)} URLS")
+            return links
     ### END by hitoki 4/26/2023 10:52pm
     
     return list()
@@ -132,11 +152,11 @@ def is_valid(url):
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
             + r"|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf"
-            + r"|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names"
+            + r"|ps|pdf|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names"
             + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
             + r"|epub|dll|cnf|tgz|sha1"
-            + r"|thmx|mso|arff|rtf|jar|csv"
-            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower())
+            + r"|thmx|mso|arff|rtf|jar|csv|ppsx"
+            + r"|rm|smil|wmv|swf|wma|zip|rar|gz|bib|pptx|ppsx|ppt)$", parsed.path.lower())
 
     except TypeError:
         print ("TypeError for ", parsed)
