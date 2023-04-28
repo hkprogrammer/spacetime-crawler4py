@@ -109,6 +109,3 @@ venv.bak/
 *.full.py
 *.shelve
 
-output
-output.txt
-wordsCollection.txt
