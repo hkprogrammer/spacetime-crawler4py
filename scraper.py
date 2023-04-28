@@ -203,6 +203,8 @@ def is_valid(url):
     try:
         if not is_ascii(url):
             return False
+        if "zip-attachment" in url or "files" in url:
+            return False
         parsed = urlparse(url)
         if parsed.scheme not in set(["http", "https"]):
             return False
@@ -214,7 +216,7 @@ def is_valid(url):
             + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
             + r"|epub|dll|cnf|tgz|sha1"
             + r"|thmx|mso|arff|rtf|jar|csv|ppsx"
-            + r"|rm|smil|wmv|swf|wma|zip|rar|gz|bib|pptx|ppsx|ppt|odc|txt)$", parsed.path.lower())
+            + r"|rm|smil|wmv|swf|wma|zip|rar|gz|bib|pptx|ppsx|ppt|odc|txt|war|py|apk|file|ipynb|z|a|ps)$", parsed.path.lower())
 
     except TypeError:
         print ("TypeError for ", parsed)
