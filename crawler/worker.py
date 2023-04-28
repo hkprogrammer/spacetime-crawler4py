@@ -36,9 +36,10 @@ class Worker(Thread):
                 f"using cache {self.config.cache_server}.")
             
             writingFile = open("wordsCollection.txt","a")
-            
-            scraped_urls = scraper.scraper(self,self.frontier,tbd_url, resp,self.config,writingFile,self.stopwords,self.discoveredURLS)
+            pageOfURL = open("pageOfURLS.txt","a")
+            scraped_urls = scraper.scraper(self,self.frontier,tbd_url, resp,self.config,writingFile,self.stopwords,self.discoveredURLS,pageOfURL)
             writingFile.close()
+            pageOfURL.close()
             for scraped_url in scraped_urls:
                 self.frontier.add_url(scraped_url)
             self.frontier.mark_url_complete(tbd_url)
