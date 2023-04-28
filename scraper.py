@@ -1,4 +1,5 @@
 import re
+import hashlib
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 
@@ -75,12 +76,43 @@ def extract_next_links(worker,frontier,url, resp,config, writingFile,stopwords,d
 #added by Hitoki 4/27/2023 1:19am
 def toAbsolute(url, newlink):
     #TODO make relative to absolute
-    return newlink 
+
+    #r_p = url
+    #a_p = os.path.abspath(r_p)
+
+    return newlink
 
 #added by Hitoki 4/27/2023 1:24am
 def simHash(words):
-    #TODO
-    return -1
+    # Lecture Slide 9.5 & 12
+    # Initialize hash array with zeros
+    # words are already tokenized and pased into
+    hash_size = 64
+    v = [0] * hash_size
+
+    # Calculate hash values
+    for token in tokens:
+        # Compute hash for the token using MD5
+        token_hash = hashlib.md5(token.encode('utf-8')).hexdigest()
+
+        # Convert hash to binary representation
+        token_bin = bin(int(token_hash, 16))[2:].zfill(hash_size)
+
+        # Add token's binary hash to the vector
+        # Vector V formed by summing weights
+        for i, bit in enumerate(token_bin):
+            if bit == '1':
+                v[i] += 1
+            else:
+                v[i] -= 1
+
+    # Now bit is (fingerprint formed from V)
+    simhash = 0
+    for i, bit in enumerate(v):
+        if bit > 0:
+            simhash |= 1 << i
+
+    return simhash
 
 #added by Hitoki 4/27/2023 1:12am
 def tokenize(text,stopwords)->list:
@@ -137,6 +169,7 @@ def tokenize(text,stopwords)->list:
             except:
                 continue
     print("Number of stopwords detected:",numOfStopWordsDetected)
+
     return words
        
 
