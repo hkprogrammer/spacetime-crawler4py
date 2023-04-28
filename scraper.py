@@ -4,14 +4,14 @@ from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 
-def scraper(worker,frontier,url, resp,config,writingFile,stopwords,discoveredURLS):
+def scraper(worker,frontier,url, resp,config,writingFile,stopwords,discoveredURLS,urlDoc):
 
 
-    links = extract_next_links(worker,frontier,url, resp,config,writingFile,stopwords,discoveredURLS)
+    links = extract_next_links(worker,frontier,url, resp,config,writingFile,stopwords,discoveredURLS,urlDoc)
     
     return [link for link in links if is_valid(link)]
 
-def extract_next_links(worker,frontier,url, resp,config, writingFile,stopwords,discoveredURLs):
+def extract_next_links(worker,frontier,url, resp,config, writingFile,stopwords,discoveredURLs,urlDoc):
     # Implementation required.
     # url: the URL that was used to get the page
     # resp.url: the actual url of the page
@@ -29,6 +29,8 @@ def extract_next_links(worker,frontier,url, resp,config, writingFile,stopwords,d
     
     # print(resp)
     
+    if not is_ascii(url):
+        return list()
     
     if resp.status == 200: #added by Hitoki 4/27/2023 12:17pm
         print(url)
@@ -47,14 +49,12 @@ def extract_next_links(worker,frontier,url, resp,config, writingFile,stopwords,d
         
         
         tokens = list(set(tokenize(texts,stopwords)))
-        print(simHash(tokens))
         if simHash(tokens) not in frontier.visitedSimHashes:
-            # frontier.visitedSimHashes.append(simHash(tokens))
+            frontier.visitedSimHashes.append(simHash(tokens))
             #TODO complete simhash
             
             # errorLists = ["Sorry", "the", "requested", "page", "or", "file", "does", "not", "exist"]
             
-            # if 
             
             
             if len(tokens) >= config.min_words:
@@ -82,6 +82,7 @@ def extract_next_links(worker,frontier,url, resp,config, writingFile,stopwords,d
                         discoveredURLs.append(url)
             
             print(f"\n\nDiscovered: {len(frontier.save)} URLS so far & Visited: {worker.downloadedURLs} URLS")
+            urlDoc.write("\n"+resp.url)
             return links
     ### END by hitoki 4/26/2023 10:52pm
     
@@ -117,7 +118,6 @@ def simHash(words):
         # Add token's binary hash to the vector
         # Vector V formed by summing weights
         for i, bit in enumerate(token_bin):
-            print(i)
             if bit == '1':
                 v[i] += 1
             else:
@@ -131,6 +131,10 @@ def simHash(words):
 
     return simhash
     #return -1
+
+#from stackoverflow page: https://stackoverflow.com/questions/196345/how-to-check-if-a-string-in-python-is-in-ascii
+def is_ascii(s):
+    return all(ord(c) < 128 for c in s)
 
 
 #added by Hitoki 4/27/2023 1:12am
@@ -197,6 +201,8 @@ def is_valid(url):
     # If you decide to crawl it, return True; otherwise return False.
     # There are already some conditions that return False.
     try:
+        if not is_ascii(url):
+            return False
         parsed = urlparse(url)
         if parsed.scheme not in set(["http", "https"]):
             return False
@@ -220,5 +226,4 @@ if __name__ == "__main__":
     
     print(simHash(["Hello", "World"]))
     print(simHash(["Hello", "World","a"]))
-    
     
