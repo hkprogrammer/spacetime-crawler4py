@@ -13,6 +13,7 @@ class Worker(Thread):
         self.config = config
         self.frontier = frontier
         self.discoveredURLS = []
+        self.downloadedURLs = 0
         
         with open("stopwords.txt","r") as f:
             self.stopwords = [i.strip() for i in f]
@@ -29,6 +30,7 @@ class Worker(Thread):
                 self.logger.info("Frontier is empty. Stopping Crawler.")
                 break
             resp = download(tbd_url, self.config, self.logger)
+            self.downloadedURLs += 1
             self.logger.info(
                 f"Downloaded {tbd_url}, status <{resp.status}>, "
                 f"using cache {self.config.cache_server}.")

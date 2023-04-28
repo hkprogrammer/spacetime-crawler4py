@@ -40,12 +40,12 @@ if __name__ == "__main__":
             # since the words in our text file is alphanumeric, we don't have to test that
             word_count[word] += 1
 
-    top_50_words = word_count_common(50)
+    # top_50_words = word_count_common(50)
 
-    with open('top_50_words.txt', 'w') as f:
-        f.write("Top 50 Words appeared from the crawler!\n")
-        for word, count in top_50_words:
-            f.write(f'{word}: {count}\n')
+    # with open('top_50_words.txt', 'w') as f:
+    #     f.write("Top 50 Words appeared from the crawler!\n")
+    #     for word, count in top_50_words:
+    #         f.write(f'{word}: {count}\n')
 
     #Method 2: How many times the word appeared in the documents (Counts)
 
