@@ -66,7 +66,7 @@ def extract_next_links(worker,frontier,url, resp,config, writingFile,stopwords,d
                         links.append(link)
                         discoveredURLs.append(url)
             frontier.visited.append(discoveredURLs)
-            print(f"\n\nDiscovered: {len(discoveredURLs)} URLS so far & Visited: {len(frontier.visited)} URLS")
+            print(f"\n\nDiscovered: {len(frontier.save)} URLS so far & Visited: {len(frontier.visited)} URLS")
             return links
     ### END by hitoki 4/26/2023 10:52pm
     
@@ -156,7 +156,7 @@ def is_valid(url):
             + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
             + r"|epub|dll|cnf|tgz|sha1"
             + r"|thmx|mso|arff|rtf|jar|csv|ppsx"
-            + r"|rm|smil|wmv|swf|wma|zip|rar|gz|bib|pptx|ppsx|ppt)$", parsed.path.lower())
+            + r"|rm|smil|wmv|swf|wma|zip|rar|gz|bib|pptx|ppsx|ppt|odc|txt)$", parsed.path.lower())
 
     except TypeError:
         print ("TypeError for ", parsed)
