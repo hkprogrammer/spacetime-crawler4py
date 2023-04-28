@@ -2,7 +2,7 @@ import re
 import hashlib
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
-
+from urllib.parse import urljoin
 
 def scraper(worker,frontier,url, resp,config,writingFile,stopwords,discoveredURLS):
 
@@ -37,12 +37,24 @@ def extract_next_links(worker,frontier,url, resp,config, writingFile,stopwords,d
         #finding all links
         links = list()
         texts = soup.get_text()
-
-        tokens = list(set(tokenize(texts,stopwords)))
         
+        errorLists = ["Sorry, the requested page or file does not exist.","404","file not found", "page not found"]
+        
+        frontier.visited.append(discoveredURLs)
+        for i in errorLists:
+            if i in texts:
+                return list()
+        
+        
+        tokens = list(set(tokenize(texts,stopwords)))
         
         if simHash(tokens) not in frontier.visitedSimHashes:
             #TODO complete simhash
+            
+            # errorLists = ["Sorry", "the", "requested", "page", "or", "file", "does", "not", "exist"]
+            
+            # if 
+            
             
             if len(tokens) >= config.min_words:
                 
@@ -55,9 +67,10 @@ def extract_next_links(worker,frontier,url, resp,config, writingFile,stopwords,d
                 if not link or "pdf" in link:
                     continue
                 
+                link = toAbsolute(url,link)
                 if re.match("^.+ics.uci.edu/",str(link)) or re.match("^.+cs.uci.edu/",str(link)) or re.match("^.+informatics.uci.edu/",str(link)) or re.match("^.+stat.uci.edu/",str(link)):
                     
-                    link = toAbsolute(url,link)
+                    
                     
                     if link not in discoveredURLs:
                         if "?" in link:
@@ -66,8 +79,8 @@ def extract_next_links(worker,frontier,url, resp,config, writingFile,stopwords,d
                             link = link[:link.index("#")]
                         links.append(link)
                         discoveredURLs.append(url)
-            frontier.visited.append(discoveredURLs)
-            print(f"\n\nDiscovered: {len(discoveredURLs)} URLS so far & Visited: {len(frontier.visited)} URLS")
+            
+            print(f"\n\nDiscovered: {len(frontier.save)} URLS so far & Visited: {len(frontier.visited)} URLS")
             return links
     ### END by hitoki 4/26/2023 10:52pm
     
@@ -76,11 +89,11 @@ def extract_next_links(worker,frontier,url, resp,config, writingFile,stopwords,d
 #added by Hitoki 4/27/2023 1:19am
 def toAbsolute(url, newlink):
     #TODO make relative to absolute
+    if newlink.startswith("https://") or newlink.startswith("http://"):
+        return newlink
+    combined = urljoin(url, newlink)
 
-    #r_p = url
-    #a_p = os.path.abspath(r_p)
-
-    return newlink
+    return combined  
 
 #added by Hitoki 4/27/2023 1:24am
 def simHash(words):
@@ -193,7 +206,7 @@ def is_valid(url):
             + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
             + r"|epub|dll|cnf|tgz|sha1"
             + r"|thmx|mso|arff|rtf|jar|csv|ppsx"
-            + r"|rm|smil|wmv|swf|wma|zip|rar|gz|bib|pptx|ppsx|ppt)$", parsed.path.lower())
+            + r"|rm|smil|wmv|swf|wma|zip|rar|gz|bib|pptx|ppsx|ppt|odc|txt)$", parsed.path.lower())
 
     except TypeError:
         print ("TypeError for ", parsed)
@@ -202,3 +215,4 @@ def is_valid(url):
 
 if __name__ == "__main__":
     print(is_valid(""))
+    
