@@ -47,8 +47,9 @@ def extract_next_links(worker,frontier,url, resp,config, writingFile,stopwords,d
         
         
         tokens = list(set(tokenize(texts,stopwords)))
-        
+        print(simHash(tokens))
         if simHash(tokens) not in frontier.visitedSimHashes:
+            # frontier.visitedSimHashes.append(simHash(tokens))
             #TODO complete simhash
             
             # errorLists = ["Sorry", "the", "requested", "page", "or", "file", "does", "not", "exist"]
@@ -80,7 +81,7 @@ def extract_next_links(worker,frontier,url, resp,config, writingFile,stopwords,d
                         links.append(link)
                         discoveredURLs.append(url)
             
-            print(f"\n\nDiscovered: {len(frontier.save)} URLS so far & Visited: {len(frontier.visited)} URLS")
+            print(f"\n\nDiscovered: {len(frontier.save)} URLS so far & Visited: {worker.downloadedURLs} URLS")
             return links
     ### END by hitoki 4/26/2023 10:52pm
     
@@ -100,6 +101,7 @@ def simHash(words):
     # Lecture Slide 9.5 & 12
     # Initialize hash array with zeros
     # words are already tokenized and pased into
+
     hash_size = 64
     v = [0] * (hash_size + 1)
 
@@ -129,6 +131,7 @@ def simHash(words):
 
     return simhash
     #return -1
+
 
 #added by Hitoki 4/27/2023 1:12am
 def tokenize(text,stopwords)->list:
@@ -214,4 +217,8 @@ def is_valid(url):
 
 if __name__ == "__main__":
     print(is_valid(""))
+    
+    print(simHash(["Hello", "World"]))
+    print(simHash(["Hello", "World","a"]))
+    
     
