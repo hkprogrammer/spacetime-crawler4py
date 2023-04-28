@@ -100,22 +100,22 @@ def simHash(words):
     # Lecture Slide 9.5 & 12
     # Initialize hash array with zeros
     # words are already tokenized and pased into
-    '''
-    print("A")
     hash_size = 64
-    v = [0] * hash_size
+    v = [0] * (hash_size + 1)
 
     # Calculate hash values
     for token in words:
         # Compute hash for the token using MD5
-        token_hash = hashlib.md5(token.encode('utf-8')).hexdigest()
+        #token_hash = hashlib.md5(token.encode('utf-8')).hexdigest()
 
         # Convert hash to binary representation
-        token_bin = bin(int(token_hash, 16))[2:].zfill(hash_size)
+        #token_bin = bin(int(token_hash, 16))[2:].zfill(hash_size)
+        token_bin = bin(int(hash(token)))[2:].zfill(hash_size)
 
         # Add token's binary hash to the vector
         # Vector V formed by summing weights
         for i, bit in enumerate(token_bin):
+            print(i)
             if bit == '1':
                 v[i] += 1
             else:
@@ -128,8 +128,7 @@ def simHash(words):
             simhash |= 1 << i
 
     return simhash
-    '''
-    return -1
+    #return -1
 
 #added by Hitoki 4/27/2023 1:12am
 def tokenize(text,stopwords)->list:
