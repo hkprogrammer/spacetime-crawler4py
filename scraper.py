@@ -91,7 +91,7 @@ def simHash(words):
     v = [0] * hash_size
 
     # Calculate hash values
-    for token in tokens:
+    for token in words:
         # Compute hash for the token using MD5
         token_hash = hashlib.md5(token.encode('utf-8')).hexdigest()
 
