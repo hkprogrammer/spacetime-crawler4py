@@ -32,7 +32,7 @@ def extract_next_links(worker,frontier,url, resp,config, writingFile,stopwords,d
     if not is_ascii(url):
         return list()
     
-    if resp.status == 200: #added by Hitoki 4/27/2023 12:17pm
+    if resp.status in range(200,300): #added by Hitoki 4/27/2023 12:17pm
         print(url)
         soup = BeautifulSoup(resp.raw_response.text, 'html.parser') # beautifulsoup for html.
     
