@@ -105,6 +105,7 @@ def simHash(words):
 
     hash_size = 64
     v = [0] * (hash_size + 1)
+    # extra bit is used as a sign bit
 
     # Calculate hash values
     for token in words:
@@ -114,6 +115,7 @@ def simHash(words):
         # Convert hash to binary representation
         #token_bin = bin(int(token_hash, 16))[2:].zfill(hash_size)
         token_bin = bin(int(hash(token)))[2:].zfill(hash_size)
+        # to remove first two characters from binary expression of hash value (Ob)
 
         # Add token's binary hash to the vector
         # Vector V formed by summing weights
